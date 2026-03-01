@@ -47,7 +47,7 @@ A web app that enables users to rent cars from other users through secure, onlin
 ### Tech Stack
 | Category | Technology |
 | ----------- | ----------- |
-| Frontend | TypeScript, ReactJS |
+| Frontend | TypeScript, ReactJS, Vite |
 | Backend | Java, Spring Boot |
 | Security | Spring Security, JWT |
 | Database | PostgreSQL (Neon) |
