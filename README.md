@@ -25,7 +25,8 @@ A web app that enables users to rent cars from other users through secure, onlin
 
 ### Entity Relationships
 - A **User** owns many Cars
-- A **User** can send and receive many Reviews
+- A **Car** can recieve many reviews
+- A **User** can be the sender of a review
 - A **Booking** belongs to one Car
 - A **Booking** has one Renter
 - A **Payment** belongs to one Booking
