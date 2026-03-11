@@ -3,7 +3,9 @@ package com.autoshare.autoshare.entity;
 import java.time.OffsetDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import com.autoshare.autoshare.enums.UserRole;
 
@@ -16,7 +18,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 @Data
 public class User {
     @Id
@@ -24,6 +26,7 @@ public class User {
     private String userId;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "role", columnDefinition = "user_role_enum")
     private UserRole role;
 

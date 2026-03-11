@@ -2,6 +2,7 @@ package com.autoshare.autoshare.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.autoshare.autoshare.dto.UserRequestDTO;
 import com.autoshare.autoshare.dto.UserResponseDTO;
 import com.autoshare.autoshare.entity.User;
 
@@ -18,5 +19,14 @@ public class UserMapper {
                 user.getRole() != null ? user.getRole().name() : null,
                 user.getCreatedAt()
         );
+    }
+
+    public User toEntity(UserRequestDTO userRequestDTO) {
+        User user = new User();
+        user.setFullName(userRequestDTO.getFullName());
+        user.setUsername(userRequestDTO.getUsername());
+        user.setEmail(userRequestDTO.getEmail());
+        user.setPhone(userRequestDTO.getPhone());
+        return user;
     }
 }
