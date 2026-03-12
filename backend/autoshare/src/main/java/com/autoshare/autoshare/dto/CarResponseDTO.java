@@ -8,7 +8,7 @@ import com.autoshare.autoshare.enums.Transmission;
 import lombok.Value;
 
 @Value
-public class CarResponse {
+public class CarResponseDTO {
     private String carId;
     private String userId;
     private String make;
