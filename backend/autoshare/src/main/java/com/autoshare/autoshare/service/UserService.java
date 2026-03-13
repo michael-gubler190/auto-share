@@ -2,8 +2,6 @@ package com.autoshare.autoshare.service;
 
 import java.util.UUID;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +9,6 @@ import com.autoshare.autoshare.dto.AuthResponseDTO;
 import com.autoshare.autoshare.dto.LoginRequestDTO;
 import com.autoshare.autoshare.dto.RefreshTokenRequestDTO;
 import com.autoshare.autoshare.dto.UserRequestDTO;
-import com.autoshare.autoshare.dto.UserResponseDTO;
 import com.autoshare.autoshare.entity.User;
 import com.autoshare.autoshare.enums.UserRole;
 import com.autoshare.autoshare.exceptions.ConflictException;
@@ -29,7 +26,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
 
@@ -58,10 +54,13 @@ public class UserService {
 
 
     public AuthResponseDTO login(LoginRequestDTO loginRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
+            throw new UnauthorizedException("Invalid email or password");
+        }
+        
         
         String accessToken = jwtUtil.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole().name());
         String refreshString = jwtUtil.generateRefreshToken(user.getUserId());
@@ -70,7 +69,7 @@ public class UserService {
     }
 
 
-    public UserResponseDTO register(UserRequestDTO userRequest) {
+    public AuthResponseDTO register(UserRequestDTO userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new ConflictException("Email is already in use");
         }
@@ -90,6 +89,9 @@ public class UserService {
 
         userRepository.save(user);
 
-        return userMapper.toResponseDTO(user);
+        String accessToken = jwtUtil.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole().name());
+        String refreshString = jwtUtil.generateRefreshToken(user.getUserId());
+
+        return new AuthResponseDTO(accessToken, refreshString, userMapper.toResponseDTO(user));
     }
 }
