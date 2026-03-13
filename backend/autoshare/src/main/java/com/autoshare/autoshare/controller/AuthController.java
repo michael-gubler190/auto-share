@@ -13,8 +13,12 @@ import com.autoshare.autoshare.dto.LoginRequestDTO;
 import com.autoshare.autoshare.dto.RefreshTokenRequestDTO;
 import com.autoshare.autoshare.dto.UserRequestDTO;
 import com.autoshare.autoshare.dto.UserResponseDTO;
+import com.autoshare.autoshare.exceptions.UnauthorizedException;
+import com.autoshare.autoshare.security.CookieUtil;
 import com.autoshare.autoshare.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -24,30 +28,54 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
     
     private final UserService userService;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> register(@Valid @RequestBody UserRequestDTO requestDTO) {
-        UserResponseDTO user = userService.register(requestDTO);
+    public ResponseEntity<ApiResponse<UserResponseDTO>> register(@Valid @RequestBody UserRequestDTO requestDTO, HttpServletResponse response) {
+        AuthResponseDTO auth = userService.register(requestDTO);
+
+        cookieUtil.addAccessTokenCookie(response, auth.getAccessToken());
+        cookieUtil.addRefreshTokenCookie(response, auth.getRefreshToken());
+
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(ApiResponse.success("User registered successfully", user));
+            .body(ApiResponse.success("User registered successfully", auth.getUser()));
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<ApiResponse<UserResponseDTO>> login(@Valid @RequestBody LoginRequestDTO dto, HttpServletResponse response) {
         AuthResponseDTO auth = userService.login(dto);
+
+        cookieUtil.addAccessTokenCookie(response, auth.getAccessToken());
+        cookieUtil.addRefreshTokenCookie(response, auth.getRefreshToken());
+
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(ApiResponse.success("Login successful", auth));
+            .body(ApiResponse.success("Login successful", auth.getUser()));
     }
 
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> refresh(@Valid @RequestBody RefreshTokenRequestDTO dto) {
-        AuthResponseDTO auth = userService.refresh(dto);
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(ApiResponse.success("Token refreshed", auth));
+    public ResponseEntity<ApiResponse<Void>> refresh(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = cookieUtil.extractRefreshToken(request)
+            .orElseThrow(() -> new UnauthorizedException("Refresh token missing"));
+
+        RefreshTokenRequestDTO refreshTokenRequestDTO = new RefreshTokenRequestDTO();
+        refreshTokenRequestDTO.setRefreshToken(refreshToken);
+
+        AuthResponseDTO auth = userService.refresh(refreshTokenRequestDTO);
+
+        cookieUtil.addAccessTokenCookie(response, auth.getAccessToken());
+        cookieUtil.addRefreshTokenCookie(response, auth.getRefreshToken());
+
+        return ResponseEntity.ok(ApiResponse.success("Token refreshed", null));
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletResponse response) {
+        cookieUtil.clearCookies(response);
+        return ResponseEntity.ok(ApiResponse.success("Logged out successfully", null));
     }
 }
