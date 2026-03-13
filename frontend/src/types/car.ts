@@ -3,6 +3,7 @@ export interface CarResponse {
     userId: string;
     make: string;
     model: string;
+    year: number;
     numberOfSeats?: number;
     powerType?: string;
     milesPerGallon?: number;
