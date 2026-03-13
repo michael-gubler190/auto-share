@@ -13,6 +13,7 @@ public class CarResponseDTO {
     private String userId;
     private String make;
     private String model;
+    private Integer year;
     private Integer numberOfSeats;
     private PowerType powerType;
     private Double milesPerGallon;
