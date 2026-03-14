@@ -1,8 +1,14 @@
+import { useNavigate } from 'react-router-dom'
 import type { CarResponse } from '../types/car'
 
 function CarListingCard(car : CarResponse) {
+    const navigate = useNavigate();
+
   return (
-    <div className='transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer'>
+    <div
+        className='transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer'
+        onClick={() => navigate(`/cars/${car["carId"]}`)}
+    >
         <img
             className='rounded-2xl'
             src="https://images.turo.com/media/vehicle/images/C7biWnpiTUirsC3hidS-ew.jpg"

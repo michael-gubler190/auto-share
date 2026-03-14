@@ -1,11 +1,14 @@
 import { SparklesIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
+    const navigate = useNavigate();
+
   return (
     <div className="bg-sky-500 text-white py-5">
         <div className="sm:container mx-auto flex items-center justify-between">
-            <h1 className="text-3xl font-bold">
-                <a href="/">AutoShare</a>
+            <h1 className="text-3xl font-bold cursor-pointer" onClick={() => navigate("/")}>
+                AutoShare
             </h1>
 
             <div>
