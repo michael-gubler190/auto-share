@@ -16,3 +16,12 @@ export const useCars = () => {
         staleTime: 1000 * 60 * 5,
     });
 };
+
+
+export const useCarById = (carId: string) => {
+    return useQuery({
+        queryKey: CAR_KEYS.byId(carId),
+        queryFn: () => carService.getById(carId),
+        enabled: !!carId
+    });
+}

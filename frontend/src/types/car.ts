@@ -5,7 +5,7 @@ export interface CarResponse {
     model: string;
     year: number;
     numberOfSeats?: number;
-    powerType?: string;
+    powerType?: "gas" | "electric";
     milesPerGallon?: number;
     distanceWithFullCharge?: number;
     transmission?: string;

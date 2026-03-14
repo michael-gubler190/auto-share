@@ -3,11 +3,12 @@ import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
 import SearchBar from "../components/SearchBar"
 import { useCars } from "../hooks/useCars"
+import LoadingScreen from "./LoadingScreen";
 
 function HomePage() {
   const { data, isLoading, isError } = useCars();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingScreen />;
   if (isError) return <div>Failed to load listings</div>;
 
   return (
