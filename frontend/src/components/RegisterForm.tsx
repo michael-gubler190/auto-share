@@ -1,8 +1,10 @@
 import { useState, type ChangeEvent, type SubmitEvent } from "react"
 import { useRegister } from "../hooks/useAuth";
 import type { RegisterRequest } from "../types/auth";
+import { useAuth } from "../context/AuthContext";
 
 function RegisterForm() {
+    const { setUserAndStore } = useAuth();
     const registerMutation = useRegister();
 
     const [inputInfo, setInputInfo] = useState<RegisterRequest>({
@@ -25,8 +27,8 @@ function RegisterForm() {
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         registerMutation.mutate(inputInfo, {
-            onSuccess: () => {
-                
+            onSuccess: (data) => {
+                setUserAndStore(data);
             }
         });
     }
