@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import { useModal } from "../hooks/useModal";
 import RegisterForm from "./RegisterForm";
+import LoginForm from "./LoginForm";
 
 function Navbar() {
     const navigate = useNavigate();
     const registerModal = useModal();
+    const loginModal = useModal();
 
   return (
     <div className="bg-sky-500 text-white py-5">
@@ -16,7 +18,7 @@ function Navbar() {
             </h1>
 
             <div className="flex gap-5">
-                <button type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
+                <button onClick={loginModal.open} type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
                     <span>Login</span>
                 </button>
 
@@ -39,6 +41,14 @@ function Navbar() {
             title="Sign up"
         >
             <RegisterForm />
+        </Modal>
+
+        <Modal
+            isOpen={loginModal.isOpen}
+            onClose={loginModal.close}
+            title="Login"
+        >
+            <LoginForm />
         </Modal>
     </div>
   )

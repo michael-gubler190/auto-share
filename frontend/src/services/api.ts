@@ -15,6 +15,15 @@ api.interceptors.response.use(
     async (error) => {
         const original = error.config;
 
+        
+        // Don't intercept auth endpoints — let those errors
+        // pass through to the component directly
+        const isAuthRoute = original.url?.includes("/api/auth/");
+        if (isAuthRoute) {
+            return Promise.reject(error);
+        }
+
+
         if (error.response?.status === 401 && !original._retry) {
             original._retry = true;
 

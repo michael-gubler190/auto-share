@@ -7,6 +7,12 @@ export interface RegisterRequest {
 }
 
 
+export interface LoginRequest {
+    email: string,
+    password: string
+}
+
+
 export interface UserResponseDTO {
     userId: string;
     fullName: string;
