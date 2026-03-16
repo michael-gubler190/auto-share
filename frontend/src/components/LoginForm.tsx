@@ -1,9 +1,11 @@
 import { useState, type ChangeEvent, type SubmitEvent } from "react";
 import { useLogin } from "../hooks/useAuth"
 import type { LoginRequest } from "../types/auth";
+import { useAuth } from "../context/AuthContext";
 
 function LoginForm() {
     const loginMutation = useLogin();
+    const { setUserAndStore } = useAuth();
 
     const [loginInfo, setLoginInfo] = useState<LoginRequest>({
         email: "",
@@ -21,7 +23,11 @@ function LoginForm() {
 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
-        loginMutation.mutate(loginInfo);
+        loginMutation.mutate(loginInfo, {
+            onSuccess: (data) => {
+                setUserAndStore(data);
+            }
+        });
     }
 
 
