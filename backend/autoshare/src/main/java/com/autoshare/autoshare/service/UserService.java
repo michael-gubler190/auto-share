@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 import com.autoshare.autoshare.dto.AuthResponseDTO;
 import com.autoshare.autoshare.dto.LoginRequestDTO;
 import com.autoshare.autoshare.dto.RefreshTokenRequestDTO;
+import com.autoshare.autoshare.dto.UpdateUserRequestDTO;
 import com.autoshare.autoshare.dto.UserRequestDTO;
+import com.autoshare.autoshare.dto.UserResponseDTO;
 import com.autoshare.autoshare.entity.User;
 import com.autoshare.autoshare.enums.UserRole;
 import com.autoshare.autoshare.exceptions.ConflictException;
 import com.autoshare.autoshare.exceptions.ResourceNotFoundException;
 import com.autoshare.autoshare.exceptions.UnauthorizedException;
+import com.autoshare.autoshare.exceptions.ValidationException;
 import com.autoshare.autoshare.mapper.UserMapper;
 import com.autoshare.autoshare.repository.UserRepository;
 import com.autoshare.autoshare.security.JwtUtil;
@@ -27,6 +30,52 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+
+
+    public UserResponseDTO updateUser(String userId, UpdateUserRequestDTO dto) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        if (dto.getUsername() != null && !dto.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(dto.getUsername())) {
+            throw new ConflictException("Username is already taken");
+        }
+
+        if (dto.getPhone() != null && !dto.getPhone().equals(user.getPhone()) && userRepository.existsByPhone(dto.getPhone())) {
+            throw new ConflictException("Phone number is already in use");
+        }
+
+        userMapper.updateEntity(user, dto);
+        userRepository.save(user);
+
+        return userMapper.toResponseDTO(user);
+    }
+
+
+    public UserResponseDTO upgradeToOwner(String userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        if (user.getRole() == UserRole.owner) {
+            throw new ConflictException("User is already an owner");
+        }
+
+        if (user.getUsername() == null || user.getUsername().isBlank()) {
+            throw new ValidationException("A username is required to become an owner");
+        }
+
+        if (user.getPhone() == null || user.getPhone().isBlank()) {
+            throw new ValidationException("A phone number is required to become an owner");
+        }
+
+        if (user.getProfilePicturePath() == null || user.getProfilePicturePath().isBlank()) {
+            throw new ValidationException("A profile picture is required to become an owner");
+        }
+
+        user.setRole(UserRole.owner);
+        userRepository.save(user);
+
+        return userMapper.toResponseDTO(user);
+    }
 
 
     public AuthResponseDTO refresh(RefreshTokenRequestDTO refreshDTO) {
