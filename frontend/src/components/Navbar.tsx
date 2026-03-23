@@ -20,10 +20,24 @@ function Navbar() {
                 AutoShare
             </h1>
 
-            {isAuthenticated ? (
-                <button onClick={logout} type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
-                    <span>Logout</span>
+            <div>
+                <button type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
+                    <SparklesIcon className="size-5"/>
+                    <span>Ask AutoShare</span>
                 </button>
+            </div>
+
+
+            {isAuthenticated ? (
+                <div className="flex gap-5">
+                    <button onClick={() => navigate("/profile")} type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
+                        <span>Profile</span>
+                    </button>
+
+                    <button onClick={logout} type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
+                        <span>Logout</span>
+                    </button>
+                </div>
             ) : (
                 <div className="flex gap-5">
                     <button onClick={loginModal.open} type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
@@ -35,13 +49,6 @@ function Navbar() {
                     </button>
                 </div>
             )}
-
-            <div>
-                <button type="button" className="flex items-center gap-1 text-sky-500 bg-white box-border border border-transparent shadow-xs font-bold leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none hover:cursor-pointer">
-                    <SparklesIcon className="size-5"/>
-                    <span>Ask AutoShare</span>
-                </button>
-            </div>
         </div>
 
         <Modal
