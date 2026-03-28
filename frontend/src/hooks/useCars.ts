@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { carService } from "../services/carService";
+import type { CarRequest } from "../types/car";
 
 
 // Query keys as constants
@@ -23,5 +24,12 @@ export const useCarById = (carId: string) => {
         queryKey: CAR_KEYS.byId(carId),
         queryFn: () => carService.getById(carId),
         enabled: !!carId
+    });
+}
+
+
+export const useCarsCreate = () => {
+    return useMutation({
+        mutationFn: (dto: CarRequest) => carService.createListing(dto)
     });
 }
