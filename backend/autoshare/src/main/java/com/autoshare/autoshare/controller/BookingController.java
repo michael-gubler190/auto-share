@@ -2,6 +2,7 @@ package com.autoshare.autoshare.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,5 +33,17 @@ public class BookingController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(ApiResponse.success("booking requested successfully", bookingResponse));
+    }
+
+
+    // Endpoint for approving a booking
+    @PatchMapping("/approve/{bookingId}")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> approveBooking(@PathVariable String bookingId) {
+        String userId = SecurityUtil.getCurrentUserId();
+        BookingResponseDTO bookingResponseDTO = bookingService.approveBooking(bookingId, userId);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success("booking approved successfully", bookingResponseDTO));
     }
 }
