@@ -5,12 +5,12 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.autoshare.autoshare.dto.AuthResponseDTO;
-import com.autoshare.autoshare.dto.LoginRequestDTO;
-import com.autoshare.autoshare.dto.RefreshTokenRequestDTO;
-import com.autoshare.autoshare.dto.UpdateUserRequestDTO;
-import com.autoshare.autoshare.dto.UserRequestDTO;
-import com.autoshare.autoshare.dto.UserResponseDTO;
+import com.autoshare.autoshare.dto.auth.AuthResponseDTO;
+import com.autoshare.autoshare.dto.auth.LoginRequestDTO;
+import com.autoshare.autoshare.dto.auth.RefreshTokenRequestDTO;
+import com.autoshare.autoshare.dto.users.UpdateUserRequestDTO;
+import com.autoshare.autoshare.dto.users.UserRequestDTO;
+import com.autoshare.autoshare.dto.users.UserResponseDTO;
 import com.autoshare.autoshare.entity.User;
 import com.autoshare.autoshare.enums.UserRole;
 import com.autoshare.autoshare.exceptions.ConflictException;

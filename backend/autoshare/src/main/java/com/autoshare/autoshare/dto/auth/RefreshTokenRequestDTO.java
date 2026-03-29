@@ -1,4 +1,4 @@
-package com.autoshare.autoshare.dto;
+package com.autoshare.autoshare.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

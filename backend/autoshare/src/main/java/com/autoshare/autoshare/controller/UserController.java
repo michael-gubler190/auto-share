@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.autoshare.autoshare.dto.ApiResponse;
-import com.autoshare.autoshare.dto.UpdateUserRequestDTO;
-import com.autoshare.autoshare.dto.UserResponseDTO;
+import com.autoshare.autoshare.dto.users.UpdateUserRequestDTO;
+import com.autoshare.autoshare.dto.users.UserResponseDTO;
 import com.autoshare.autoshare.security.SecurityUtil;
 import com.autoshare.autoshare.service.UserService;
 

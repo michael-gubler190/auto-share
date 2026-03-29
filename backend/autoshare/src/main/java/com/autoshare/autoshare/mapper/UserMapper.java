@@ -2,9 +2,9 @@ package com.autoshare.autoshare.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.autoshare.autoshare.dto.UpdateUserRequestDTO;
-import com.autoshare.autoshare.dto.UserRequestDTO;
-import com.autoshare.autoshare.dto.UserResponseDTO;
+import com.autoshare.autoshare.dto.users.UpdateUserRequestDTO;
+import com.autoshare.autoshare.dto.users.UserRequestDTO;
+import com.autoshare.autoshare.dto.users.UserResponseDTO;
 import com.autoshare.autoshare.entity.User;
 
 @Component

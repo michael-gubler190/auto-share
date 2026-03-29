@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.autoshare.autoshare.dto.CarRequestDTO;
-import com.autoshare.autoshare.dto.CarResponseDTO;
+import com.autoshare.autoshare.dto.cars.CarRequestDTO;
+import com.autoshare.autoshare.dto.cars.CarResponseDTO;
 import com.autoshare.autoshare.entity.Car;
 import com.autoshare.autoshare.exceptions.ForbiddenException;
 import com.autoshare.autoshare.exceptions.ResourceNotFoundException;

@@ -1,4 +1,4 @@
-package com.autoshare.autoshare.dto;
+package com.autoshare.autoshare.dto.cars;
 
 import com.autoshare.autoshare.enums.PowerType;
 import com.autoshare.autoshare.enums.Transmission;
