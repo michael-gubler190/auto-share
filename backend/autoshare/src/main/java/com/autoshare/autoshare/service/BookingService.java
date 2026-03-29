@@ -30,9 +30,9 @@ public class BookingService {
     private final BookingMapper bookingMapper;
 
 
+    // Request a booking
     @Transactional
     public BookingResponseDTO requestBooking(BookingRequestDTO dto, String carId, String userId) {
-        System.out.println(userId);
         // Verify car exists
         Car car = carRepository.findById(carId).orElseThrow(() -> new ResourceNotFoundException("Car not found with id: " + carId));
 
@@ -78,6 +78,35 @@ public class BookingService {
         booking.setTotalPrice(totalPrice);
         
         bookingRepository.save(booking);
+        return bookingMapper.toResponseDTO(booking);
+    }
+
+
+    // Approve a booking
+    @Transactional
+    public BookingResponseDTO approveBooking(String bookingId, String userId) {
+        // Verify booking exists
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        // Verify user is owner of the car
+        Car bookingCar = carRepository.findById(booking.getCarId()).orElseThrow(() -> new ResourceNotFoundException("Car not found with id: " + booking.getCarId()));
+        if (!userId.equals(bookingCar.getUserId())) {
+            throw new ForbiddenException("You are not the owner of the car in this booking");
+        }
+
+        // Verify trip_start is still in the future
+        if (booking.getTripStart().isBefore(OffsetDateTime.now())) {
+            throw new ValidationException("Cannot approve a booking whose trip has already started");
+        }
+
+        // Verify booking is currently in a requested state
+        if (booking.getState() != BookingState.requested) {
+            throw new ValidationException("Only requested bookings can be approved");
+        }
+
+        booking.setState(BookingState.approved);
+        bookingRepository.save(booking);
+
         return bookingMapper.toResponseDTO(booking);
     }
 }
