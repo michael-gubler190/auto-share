@@ -1,4 +1,4 @@
-package com.autoshare.autoshare.dto;
+package com.autoshare.autoshare.dto.users;
 
 import lombok.Data;
 

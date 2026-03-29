@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.autoshare.autoshare.dto.ApiResponse;
-import com.autoshare.autoshare.dto.CarRequestDTO;
-import com.autoshare.autoshare.dto.CarResponseDTO;
+import com.autoshare.autoshare.dto.cars.CarRequestDTO;
+import com.autoshare.autoshare.dto.cars.CarResponseDTO;
 import com.autoshare.autoshare.security.SecurityUtil;
 import com.autoshare.autoshare.service.CarService;
 

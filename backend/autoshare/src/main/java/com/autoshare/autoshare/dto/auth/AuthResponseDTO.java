@@ -1,4 +1,6 @@
-package com.autoshare.autoshare.dto;
+package com.autoshare.autoshare.dto.auth;
+
+import com.autoshare.autoshare.dto.users.UserResponseDTO;
 
 import lombok.Value;
 
