@@ -82,29 +82,79 @@ public class BookingService {
     }
 
 
-    // Approve a booking
+    // Update booking state
     @Transactional
-    public BookingResponseDTO approveBooking(String bookingId, String userId) {
+    public BookingResponseDTO updateBookingState(String bookingId, String userId, BookingState newState) {
         // Verify booking exists
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
 
-        // Verify user is owner of the car
+        // Verify car exists
         Car bookingCar = carRepository.findById(booking.getCarId()).orElseThrow(() -> new ResourceNotFoundException("Car not found with id: " + booking.getCarId()));
-        if (!userId.equals(bookingCar.getUserId())) {
-            throw new ForbiddenException("You are not the owner of the car in this booking");
-        }
 
         // Verify trip_start is still in the future
-        if (booking.getTripStart().isBefore(OffsetDateTime.now())) {
-            throw new ValidationException("Cannot approve a booking whose trip has already started");
+        if (booking.getTripStart().isBefore(OffsetDateTime.now()) && newState != BookingState.completed && newState != BookingState.cancelled) {
+            throw new ValidationException("Cannot affect a booking whose trip has already started");
         }
 
-        // Verify booking is currently in a requested state
-        if (booking.getState() != BookingState.requested) {
-            throw new ValidationException("Only requested bookings can be approved");
+        // Verify booking is currently in a state that is ok to take next action
+        switch (newState) {
+            // Trying to approve booking
+            case approved -> {
+                if (booking.getState() != BookingState.requested) {
+                    throw new ValidationException("Only requested bookings can be approved");
+                }
+                if (!userId.equals(bookingCar.getUserId())) {
+                    throw new ForbiddenException("Only the car owner can approve a booking");
+                }
+            }
+
+            // Trying to reject booking
+            case rejected -> {
+                if (booking.getState() != BookingState.requested) {
+                    throw new ValidationException("Only requested bookings can be rejected");
+                }
+                if (!userId.equals(bookingCar.getUserId())) {
+                    throw new ForbiddenException("Only the car owner can reject a booking");
+                }
+            }
+
+            // Trying to make booking active
+            case active -> {
+                if (booking.getState() != BookingState.approved) {
+                    throw new ValidationException("Only approved bookings can be set to active");
+                }
+                if (!userId.equals(bookingCar.getUserId())) {
+                    throw new ForbiddenException("Only the car owner can activate a booking");
+                }
+            }
+
+            // Trying to cancel booking
+            case cancelled -> {
+                if (booking.getState() == BookingState.completed ||
+                    booking.getState() == BookingState.rejected ||
+                    booking.getState() == BookingState.cancelled) {
+                    throw new ValidationException("This booking cannot be cancelled");
+                }
+                if (!booking.getRenterId().equals(userId) && !bookingCar.getUserId().equals(userId)) {
+                    throw new ForbiddenException("Only car owner or renter can cancel a booking");
+                }
+            }
+
+            // Trying to complete booking
+            case completed -> {
+                if (booking.getState() != BookingState.active) {
+                    throw new ValidationException("Only active bookings can be completed");
+                }
+                if (!userId.equals(bookingCar.getUserId())) {
+                    throw new ForbiddenException("Only the car owner can complete a booking");
+                }
+            }
+
+            // Trying to request booking
+            case requested -> throw new ValidationException("Cannot manually set a booking to requested state");
         }
 
-        booking.setState(BookingState.approved);
+        booking.setState(newState);
         bookingRepository.save(booking);
 
         return bookingMapper.toResponseDTO(booking);
