@@ -5,6 +5,9 @@ import { useCarById } from "../hooks/useCars";
 import { UserIcon, ExclamationCircleIcon, BoltIcon, GlobeAmericasIcon, Battery100Icon, CogIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/16/solid";
 import LoadingScreen from "./LoadingScreen";
+import { useState, type SubmitEvent } from "react";
+import { useRequestBooking } from "../hooks/useBookings";
+import type { BookingRequest } from "../types/booking";
 
 
 const reviewCategories = [
@@ -38,9 +41,48 @@ const reviewCategories = [
 function CarDetailPage() {
     const { carId } = useParams<{ carId: string }>();
     const { data, isLoading, isError } = useCarById(carId!);
+    const requestBookingMutation = useRequestBooking();
+
+    const [tripStartDate, setTripStartDate] = useState("");
+    const [tripStartTime, setTripStartTime] = useState("");
+    const [tripEndDate, setTripEndDate] = useState("");
+    const [tripEndTime, setTripEndTime] = useState("");
+
+    const [pickupLocation, setPickupLocation] = useState("");
+    const [dropOffLocation, setDropOffLocation] = useState("");
 
     if (isLoading) return <LoadingScreen />;
     if (isError) return <div>Error occured</div>;
+
+
+    function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+        event.preventDefault();
+        
+        // Format trip start and end to fit request
+        const tripStart = `${tripStartDate}T${tripStartTime}:00-00:00`;
+        const tripEnd = `${tripEndDate}T${tripEndTime}:00-00:00`;
+
+        // Create BookingRequest instance
+        const bookingRequest: BookingRequest = {
+            tripStart,
+            tripEnd,
+            pickupLocation,
+            dropOffLocation
+        }
+
+        // Request booking
+        requestBookingMutation.mutate(
+            {
+                dto: bookingRequest,
+                carId: carId!
+            },
+            {
+                onSuccess: (response) => {
+                    console.log(response);
+                }
+            }
+        )
+    }
 
   return (
     <div>
@@ -221,15 +263,15 @@ function CarDetailPage() {
                         <h1 className="text-3xl font-medium pb-2">${data!["pricePerDay"] * 3}.00 total</h1>
                         <hr className="text-mist-200 pb-2"/>
 
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <p className="text-xl font-semibold">Your trip</p>
 
                             <div className="pt-2">
                                 <label htmlFor="trip-start">Trip start</label>
 
                                 <div className="flex gap-2">
-                                    <input className="border border-mist-200 rounded w-full p-2" type="date" />
-                                    <input className="border border-mist-200 rounded w-full p-2" type="time" />
+                                    <input className="border border-mist-200 rounded w-full p-2" type="date" onChange={e => setTripStartDate(e.target.value)}/>
+                                    <input className="border border-mist-200 rounded w-full p-2" type="time" onChange={e => setTripStartTime(e.target.value)}/>
                                 </div>
                             </div>
 
@@ -237,9 +279,19 @@ function CarDetailPage() {
                                 <label htmlFor="trip-start">Trip end</label>
 
                                 <div className="flex gap-2">
-                                    <input className="border border-mist-200 rounded w-full p-2" type="date" />
-                                    <input className="border border-mist-200 rounded w-full p-2" type="time" />
+                                    <input className="border border-mist-200 rounded w-full p-2" type="date" onChange={e => setTripEndDate(e.target.value)}/>
+                                    <input className="border border-mist-200 rounded w-full p-2" type="time" onChange={e => setTripEndTime(e.target.value)}/>
                                 </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="trip-start">Pick-up Location</label>
+                                <input className="border border-mist-200 rounded w-full p-2" type="text" onChange={e => setPickupLocation(e.target.value)}/>
+                            </div>
+
+                            <div className="py-2">
+                                <label htmlFor="trip-start">Drop-off Location</label>
+                                <input className="border border-mist-200 rounded w-full p-2" type="text" onChange={e => setDropOffLocation(e.target.value)}/>
                             </div>
 
                             <button className="bg-sky-500 hover:bg-sky-400 transition text-white w-full p-3 font-medium text-xl mt-3 rounded-full cursor-pointer" type="submit">Continue</button>
