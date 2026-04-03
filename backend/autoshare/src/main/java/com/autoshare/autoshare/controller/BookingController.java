@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.autoshare.autoshare.dto.ApiResponse;
 import com.autoshare.autoshare.dto.bookings.BookingRequestDTO;
 import com.autoshare.autoshare.dto.bookings.BookingResponseDTO;
+import com.autoshare.autoshare.enums.BookingState;
 import com.autoshare.autoshare.security.SecurityUtil;
 import com.autoshare.autoshare.service.BookingService;
 
@@ -40,10 +41,22 @@ public class BookingController {
     @PatchMapping("/approve/{bookingId}")
     public ResponseEntity<ApiResponse<BookingResponseDTO>> approveBooking(@PathVariable String bookingId) {
         String userId = SecurityUtil.getCurrentUserId();
-        BookingResponseDTO bookingResponseDTO = bookingService.approveBooking(bookingId, userId);
+        BookingResponseDTO bookingResponseDTO = bookingService.updateBookingState(bookingId, userId, BookingState.approved);
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ApiResponse.success("booking approved successfully", bookingResponseDTO));
+    }
+
+
+    // Endpoint for rejecting a booking
+    @PatchMapping("/reject/{bookingId}")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> rejectBooking(@PathVariable String bookingId) {
+        String userId = SecurityUtil.getCurrentUserId();
+        BookingResponseDTO bookingResponseDTO = bookingService.updateBookingState(bookingId, userId, BookingState.rejected);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success("booking rejected successfully", bookingResponseDTO));
     }
 }
